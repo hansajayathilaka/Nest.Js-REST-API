@@ -148,7 +148,9 @@
 					"script": {
 						"exec": [
 							"var jsonData = JSON.parse(responseBody);\r",
-							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);"
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);\r",
+							"pm.collectionVariables.set(\"refresh_token\", jsonData.refresh_token);\r",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -159,7 +161,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"test@email.com\",\r\n    \"password\": \"password\"\r\n}",
+					"raw": "{\r\n    \"email\": \"ttest@email.com\",\r\n    \"password\": \"pass@ttest\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -174,6 +176,89 @@
 					"path": [
 						"auth",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);\r",
+							"pm.collectionVariables.set(\"refresh_token\", jsonData.refresh_token);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refresh\": \"{{refresh_token}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/auth/refresh",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"auth",
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"pm.collectionVariables.set(\"access_token\", jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fName\": \"string\",\r\n  \"lName\": \"string\",\r\n  \"email\": \"ttest@email.com\",\r\n  \"password\": \"pass@ttest\",\r\n  \"dateOfBirth\": \"2024-01-04T06:07:09.245Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/auth/register",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"auth",
+						"register"
 					]
 				}
 			},
@@ -208,6 +293,10 @@
 		},
 		{
 			"key": "access_token",
+			"value": ""
+		},
+		{
+			"key": "refresh_token",
 			"value": ""
 		}
 	]
