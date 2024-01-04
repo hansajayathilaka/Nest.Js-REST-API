@@ -14,6 +14,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import typeorm from './config/typeorm.config';
 import { LoggerMiddleware } from './logger/logger.middleware';
+import { GoogleMapModule } from './google-map/google-map.module';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { LoggerMiddleware } from './logger/logger.middleware';
         StocksModule,
         UsersModule,
         AuthModule,
+        GoogleMapModule,
     ],
     controllers: [AppController],
     providers: [AppService],
