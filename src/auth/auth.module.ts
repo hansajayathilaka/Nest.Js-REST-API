@@ -6,6 +6,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import auth from '../config/auth.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../model/user.entity';
+import { LocalStrategy } from './strategies/local.strategy';
+import { UsersService } from '../users/users.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
     imports: [
@@ -24,7 +28,13 @@ import { User } from '../model/user.entity';
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService],
+    providers: [
+        AuthService,
+        LocalStrategy,
+        JwtStrategy,
+        RefreshTokenStrategy,
+        UsersService,
+    ],
     exports: [AuthService],
 })
 export class AuthModule {}

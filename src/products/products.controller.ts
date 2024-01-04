@@ -13,13 +13,13 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { Product } from '../model/product.entity';
 import { UpdateResult } from 'typeorm';
-import { AuthGuard } from '../auth/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('products')
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) {}
 
-    @UseGuards(AuthGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiBody({ type: CreateProductDto })
     @ApiOkResponse({
         description: 'Create product record',
@@ -66,7 +66,7 @@ export class ProductsController {
         }
     }
 
-    @UseGuards(AuthGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiBody({ type: UpdateProductDto })
     @ApiOkResponse({
         description: 'Update product object',
@@ -86,7 +86,7 @@ export class ProductsController {
         }
     }
 
-    @UseGuards(AuthGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiOkResponse({
         description: 'Delete product object',
         type: UpdateResult,

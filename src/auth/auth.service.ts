@@ -1,11 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from '../model/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { TokenResponseDto } from './dto/token-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,29 +16,52 @@ export class AuthService {
         private readonly configService: ConfigService,
     ) {}
 
-    async login(loginUserDto: LoginDto) {
+    async login(user: User): Promise<User & TokenResponseDto> {
+        const payload = { sub: { userId: user.id }, email: user.email };
+        const accessToken = await this.jwtService.signAsync(payload);
+        const refreshToken = await this.jwtService.signAsync(payload, {
+            expiresIn: this.configService.get('auth.refreshTokenExpiresIn'),
+        });
+
+        user.passwordHash = undefined;
+        return {
+            ...user,
+            access_token: accessToken,
+            refresh_token: refreshToken,
+        };
+    }
+
+    async refresh(user: User): Promise<TokenResponseDto> {
+        const payload = { sub: { userId: user.id }, email: user.email };
+        const accessToken = await this.jwtService.signAsync(payload);
+        const refreshToken = await this.jwtService.signAsync(payload, {
+            expiresIn: this.configService.get('auth.refreshTokenExpiresIn'),
+        });
+
+        return {
+            access_token: accessToken,
+            refresh_token: refreshToken,
+        };
+    }
+
+    async validateUser(email: string, password: string): Promise<User> {
         const user = await this.userRepository.findOne({
-            where: { email: loginUserDto.email },
+            where: { email },
             select: ['id', 'email', 'passwordHash'],
         });
 
         if (!user) {
-            throw new UnauthorizedException();
+            return null;
         }
 
-        const isMatch = await this.comparePassword(
-            loginUserDto.password,
-            user.passwordHash,
-        );
+        const isMatch = await this.comparePassword(password, user.passwordHash);
 
         if (!isMatch) {
-            throw new UnauthorizedException();
+            return null;
         }
 
-        const payload = { sub: user.id, email: user.email };
-        const accessToken = await this.jwtService.signAsync(payload);
-
-        return { access_token: accessToken };
+        user.passwordHash = undefined;
+        return user;
     }
 
     async hashPassword(password: string) {
