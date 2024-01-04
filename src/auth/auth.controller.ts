@@ -1,12 +1,21 @@
-import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Post,
+    UseGuards,
+    Request,
+    HttpCode,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, refs } from '@nestjs/swagger';
 import { RefreshJwtGuard } from './guards/refresh-jwt.guard';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { TokenResponseDto } from './dto/token-response.dto';
+import { User } from '../model/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -16,6 +25,12 @@ export class AuthController {
     ) {}
 
     @ApiBody({ type: LoginDto })
+    @ApiOkResponse({
+        schema: {
+            allOf: refs(User, TokenResponseDto),
+        },
+    })
+    @HttpCode(200)
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Request() req) {

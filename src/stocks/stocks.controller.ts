@@ -11,7 +11,7 @@ import {
 import { StocksService } from './stocks.service';
 import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
-import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Stock } from '../model/stock.entity';
 import { UpdateResult } from 'typeorm';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,7 +22,7 @@ export class StocksController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBody({ type: CreateStockDto })
-    @ApiOkResponse({
+    @ApiCreatedResponse({
         description: 'Create stock record',
         type: Stock,
         isArray: false,

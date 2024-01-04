@@ -5,12 +5,13 @@ import {
     Body,
     Patch,
     Param,
-    Delete, UseGuards,
+    Delete,
+    UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Product } from '../model/product.entity';
 import { UpdateResult } from 'typeorm';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -21,7 +22,7 @@ export class ProductsController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBody({ type: CreateProductDto })
-    @ApiOkResponse({
+    @ApiCreatedResponse({
         description: 'Create product record',
         type: Product,
         isArray: false,
