@@ -40,3 +40,5 @@ src/example.env
 
 # typeorm Configuration
 ormconfig.json
+
+pgdata/*
