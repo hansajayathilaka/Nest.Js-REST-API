@@ -29,6 +29,8 @@ services:
       - JWT_SECRET=secret
       - JWT_EXPIRES_IN=60s
       - JWT_REFRESH_TOKEN_EXPIRES_IN=1d
+      - DATADOG_AGENT_HOST=datadog-agent
+      - DATADOG_AGENT_HOST=8126
     ports:
       - '3000:3000'
     depends_on:
@@ -47,3 +49,16 @@ services:
       - '5050:80'
     depends_on:
       - db
+  
+  datadog-agent:
+    image: datadog/agent:latest
+    container_name: datadog-agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+    ports:
+      - "8126:8126/tcp"
+      - "8125:8125/udp"
+    environment:
+      - DD_API_KEY=DD_API_KEY
