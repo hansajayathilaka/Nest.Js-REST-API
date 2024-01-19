@@ -30,7 +30,9 @@ services:
       - JWT_EXPIRES_IN=60s
       - JWT_REFRESH_TOKEN_EXPIRES_IN=1d
       - DATADOG_AGENT_HOST=datadog-agent
-      - DATADOG_AGENT_HOST=8126
+      - DATADOG_AGENT_PORT=8126
+      - DATADOG_AGENTD_HOST=datadog-agent
+      - DATADOG_AGENTD_PORT=8125
     ports:
       - '3000:3000'
     depends_on:
@@ -49,7 +51,7 @@ services:
       - '5050:80'
     depends_on:
       - db
-  
+
   datadog-agent:
     image: datadog/agent:latest
     container_name: datadog-agent
