@@ -1,4 +1,7 @@
 import tracer, { TracerOptions } from "dd-trace";
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig({ path: './src/.env' });
 
 const config: TracerOptions = {
     hostname: process.env.DATADOG_AGENT_HOST,
