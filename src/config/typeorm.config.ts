@@ -1,9 +1,4 @@
 import { registerAs } from '@nestjs/config';
-import { config as dotenvConfig } from 'dotenv';
-import { DataSource, DataSourceOptions } from 'typeorm';
-import * as process from 'process';
-
-dotenvConfig({ path: './src/.env' });
 
 const config = {
     type: 'postgres',
@@ -19,4 +14,3 @@ const config = {
 };
 
 export default registerAs('typeorm', () => config);
-export const connectionSource = new DataSource(config as DataSourceOptions);

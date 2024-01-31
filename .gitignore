@@ -35,8 +35,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # env
-src/.env
-src/example.env
+**/.env
 
 # typeorm Configuration
 ormconfig.json

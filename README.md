@@ -58,6 +58,31 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Run Datadog injection script
+```bash
+bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_docker_injection.sh)"
+```
+
+## Start Datadog Container
+```bash
+docker run -d --name=datadog-agent -v /var/run/docker.sock:/var/run/docker.sock:ro \
+    -v /var/run/docker.sock:/var/run/docker.sock:ro \
+    -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+    -v /proc/:/host/proc/:ro \
+    -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
+    -p 8126:8126/tcp \
+    -p 8125:8125/udp \
+    -p DD_ENV="DEV" \
+    -e DD_SITE="datadoghq.com" \
+    -e DD_API_KEY=<DatadogApiKey> \
+    -e DD_APM_ENABLED=true \
+    -e DD_APM_NON_LOCAL_TRAFFIC=true \
+    -v /opt/datadog/apm:/opt/datadog/apm \
+    -e DD_APM_RECEIVER_SOCKET=/opt/datadog/apm/inject/run/apm.socket \
+    -e DD_DOGSTATSD_SOCKET=/opt/datadog/apm/inject/run/dsd.socket \
+datadog/agent:latest
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
