@@ -29,10 +29,21 @@ services:
       - JWT_SECRET=secret
       - JWT_EXPIRES_IN=60s
       - JWT_REFRESH_TOKEN_EXPIRES_IN=1d
-      - DATADOG_AGENT_HOST=datadog-agent
-      - DATADOG_AGENT_PORT=8126
-      - DATADOG_AGENTD_HOST=datadog-agent
-      - DATADOG_AGENTD_PORT=8125
+      - DD_ENV=DEV
+      - DD_TAGS=os:ubuntu,team:dev,zone:onprem,service:backend
+      - DD_TRACE_ENABLED=true # To enable and disable all features of the library
+      - DD_TRACING_ENABLED=true # To enable and disable tracing.
+      - DD_TRACE_DEBUG=false # To enable and disable tracing
+      - DD_TRACE_AGENT_HOSTNAME=datadog-agent # Hostname of the Datadog agent
+      - DD_TRACE_AGENT_PORT=8126
+      - DD_DOGSTATSD_PORT=8125
+      - DD_LOGS_INJECTION=true # Enable automatic injection of trace IDs in logs for supported logging libraries
+      - DD_TRACE_SAMPLE_RATE=1
+      - DD_RUNTIME_METRICS_ENABLED=true
+      - DD_PROFILING_ENABLED=true
+      - DD_DBM_PROPAGATION_MODE=full
+      - DD_APPSEC_ENABLED=true
+
     ports:
       - '3000:3000'
     depends_on:
@@ -57,10 +68,20 @@ services:
     container_name: datadog-agent
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+        # For APM
+      - /opt/datadog/apm:/opt/datadog/apm
     ports:
       - "8126:8126/tcp"
       - "8125:8125/udp"
     environment:
-      - DD_API_KEY=DD_API_KEY
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_ENV=DEV
+      - DD_SITE=datadoghq.com
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+        # For APM
+      - DD_APM_RECEIVER_SOCKET=/opt/datadog/apm/inject/run/apm.socket
+      - DD_DOGSTATSD_SOCKET=/opt/datadog/apm/inject/run/dsd.socket
