@@ -43,7 +43,6 @@ services:
       - DD_PROFILING_ENABLED=true
       - DD_DBM_PROPAGATION_MODE=full
       - DD_APPSEC_ENABLED=true
-
     ports:
       - '3000:3000'
     depends_on:
