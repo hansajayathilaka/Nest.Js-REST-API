@@ -36,7 +36,7 @@ lerna-debug.log*
 
 # env
 src/.env
-src/example.env
+.env
 
 # typeorm Configuration
 ormconfig.json
