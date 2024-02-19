@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from '../model/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import { TokenResponseDto } from './dto/token-response.dto';
+import authConfig from '../config/auth.config';
 
 @Injectable()
 export class AuthService {
@@ -13,14 +14,16 @@ export class AuthService {
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
         private jwtService: JwtService,
-        private readonly configService: ConfigService,
+
+        @Inject(authConfig.KEY)
+        private readonly authConfigService: ConfigType<typeof authConfig>,
     ) {}
 
     async login(user: User): Promise<User & TokenResponseDto> {
         const payload = { sub: { userId: user.id }, email: user.email };
         const accessToken = await this.jwtService.signAsync(payload);
         const refreshToken = await this.jwtService.signAsync(payload, {
-            expiresIn: this.configService.get('auth.refreshTokenExpiresIn'),
+            expiresIn: this.authConfigService.expiresIn,
         });
 
         user.passwordHash = undefined;
@@ -35,7 +38,7 @@ export class AuthService {
         const payload = { sub: { userId: user.id }, email: user.email };
         const accessToken = await this.jwtService.signAsync(payload);
         const refreshToken = await this.jwtService.signAsync(payload, {
-            expiresIn: this.configService.get('auth.refreshTokenExpiresIn'),
+            expiresIn: this.authConfigService.refreshTokenExpiresIn,
         });
 
         return {
@@ -50,15 +53,11 @@ export class AuthService {
             select: ['id', 'email', 'passwordHash'],
         });
 
-        if (!user) {
-            return null;
-        }
+        if (!user) return null;
 
         const isMatch = await this.comparePassword(password, user.passwordHash);
 
-        if (!isMatch) {
-            return null;
-        }
+        if (!isMatch) return null;
 
         user.passwordHash = undefined;
         return user;

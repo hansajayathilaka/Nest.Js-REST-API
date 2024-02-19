@@ -3,10 +3,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { WinstonModule } from 'nest-winston';
+import { WinstonLogger } from './logger/winston.logger';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
-    app.setGlobalPrefix('api/v1');
+    const winstonLogger = new WinstonLogger();
+    const app = await NestFactory.create(AppModule, {
+        logger: WinstonModule.createLogger(winstonLogger.createLoggerConfig),
+    });
 
     // Swagger
     const config = new DocumentBuilder()

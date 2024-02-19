@@ -12,16 +12,14 @@ import { StocksModule } from './stocks/stocks.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import typeorm from './config/typeorm.config';
+import typeormConfig from './config/typeorm.config';
 import { LoggerMiddleware } from './logger/logger.middleware';
 
 @Module({
     imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            load: [typeorm],
-        }),
+        ConfigModule.forRoot({ load: [typeormConfig] }),
         TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: async (configService: ConfigService) =>
                 configService.get('typeorm'),

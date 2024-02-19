@@ -1,21 +1,13 @@
-import {
-    Body,
-    Controller,
-    Post,
-    UseGuards,
-    Request,
-    HttpCode,
-} from '@nestjs/common';
+import { Body, Controller, Post, Request, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ApiBody, ApiOkResponse, refs } from '@nestjs/swagger';
-import { RefreshJwtGuard } from './guards/refresh-jwt.guard';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { User } from '../model/user.entity';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -31,7 +23,6 @@ export class AuthController {
         },
     })
     @HttpCode(200)
-    @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Request() req) {
         return await this.authService.login(req.user);
@@ -39,12 +30,12 @@ export class AuthController {
 
     @ApiBody({ type: CreateUserDto })
     @Post('register')
+    @Public()
     async register(@Body() createUserDto: CreateUserDto) {
         return await this.userService.create(createUserDto);
     }
 
     @ApiBody({ type: RefreshTokenDto })
-    @UseGuards(RefreshJwtGuard)
     @Post('refresh')
     async refreshToken(@Request() req) {
         return await this.authService.refresh(req.user);

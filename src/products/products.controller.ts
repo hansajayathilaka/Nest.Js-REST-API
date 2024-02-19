@@ -6,22 +6,19 @@ import {
     Patch,
     Param,
     Delete,
-    UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Product } from '../model/product.entity';
 import { UpdateResult } from 'typeorm';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('products')
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) {}
 
-    @UseGuards(JwtAuthGuard)
-    @ApiBody({ type: CreateProductDto })
     @ApiCreatedResponse({
         description: 'Create product record',
         type: Product,
@@ -43,6 +40,7 @@ export class ProductsController {
         isArray: true,
     })
     @Get()
+    @Public()
     findAll() {
         try {
             const products = this.productsService.findAll();
@@ -58,6 +56,7 @@ export class ProductsController {
         isArray: false,
     })
     @Get(':id')
+    @Public()
     findOne(@Param('id') id: string) {
         try {
             const product = this.productsService.findOne(id);
@@ -67,8 +66,6 @@ export class ProductsController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
-    @ApiBody({ type: UpdateProductDto })
     @ApiOkResponse({
         description: 'Update product object',
         type: UpdateResult,
@@ -87,7 +84,6 @@ export class ProductsController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
     @ApiOkResponse({
         description: 'Delete product object',
         type: UpdateResult,

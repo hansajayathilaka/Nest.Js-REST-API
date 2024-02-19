@@ -6,7 +6,6 @@ import {
     Patch,
     Param,
     Delete,
-    UseGuards,
 } from '@nestjs/common';
 import { StocksService } from './stocks.service';
 import { CreateStockDto } from './dto/create-stock.dto';
@@ -14,13 +13,12 @@ import { UpdateStockDto } from './dto/update-stock.dto';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Stock } from '../model/stock.entity';
 import { UpdateResult } from 'typeorm';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('stocks')
 export class StocksController {
     constructor(private readonly stocksService: StocksService) {}
 
-    @UseGuards(JwtAuthGuard)
     @ApiBody({ type: CreateStockDto })
     @ApiCreatedResponse({
         description: 'Create stock record',
@@ -43,6 +41,7 @@ export class StocksController {
         isArray: true,
     })
     @Get()
+    @Public()
     findAll() {
         try {
             const stocks = this.stocksService.findAll();
@@ -58,6 +57,7 @@ export class StocksController {
         isArray: false,
     })
     @Get(':id')
+    @Public()
     findOne(@Param('id') id: string) {
         try {
             const stock = this.stocksService.findOne(id);
@@ -67,7 +67,6 @@ export class StocksController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
     @ApiBody({ type: UpdateStockDto })
     @ApiOkResponse({
         description: 'Update stock record',
@@ -84,7 +83,6 @@ export class StocksController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
     @ApiOkResponse({
         description: 'Delete stock record',
         type: UpdateResult,
